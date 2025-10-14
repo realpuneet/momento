@@ -1,6 +1,7 @@
 const { generateToken } = require("../config/token");
 const userModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
+const cacheClient = require("../services/cache.service");
 
 const registerController = async (req, res) => {
   try {
@@ -90,8 +91,22 @@ const loginController = async (req, res) => {
 
 const logoutController = async (req, res) => {
   try {
-    const token = res.cookies.token;
-    res.clearCookie("token");
+    const token = req.cookies.token;
+
+    if(!token) {
+      return res.status(400).json({ message: 'token not found' });   
+    }
+
+    await cacheClient.set(token, "blacklisted");
+
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Strict"
+    });
+
+    return res.status(200).json({ message: 'Logged Out Success' });
+
   } catch (error) {
     console.log("Error in sign out :", error);
     return res.status(500).json({ message: "Internal Server Error" });

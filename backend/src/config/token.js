@@ -1,16 +1,25 @@
 const jwt = require("jsonwebtoken");
 
-const generateToken = async (user_id) => {
+const generateToken = (user_id) => {
   try {
-    const token = await jwt.sign({ user_id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user_id }, process.env.JWT_SECRET, {
       expiresIn: "10y",
     });
     return token;
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Generate token Error" });
+    throw new Error("Token generation failed");
   }
 };
 
+const verifyToken = (token) => {
+  try {
+    const tokenVerify = jwt.verify(token, process.env.JWT_SECRET);
+    return tokenVerify;
+  } catch (error) {
+    console.log("Error in verify token", error);
+    throw new Error("Token verification failed");
+  }
+};
 
-module.exports = {generateToken};
+module.exports = { generateToken, verifyToken };
