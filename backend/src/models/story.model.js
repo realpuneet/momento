@@ -25,10 +25,14 @@ const storySchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now(),
-      expires: "",
+      expires: 86400,
     },
   },
   {
     timestamps: true,
   }
 );
+
+const storyModel = mongoose.model("Story", storySchema);
+
+module.exports = storyModel;
