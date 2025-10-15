@@ -1,6 +1,5 @@
 const { generateToken } = require("../config/token");
 const userModel = require("../models/user.model");
-const jwt = require("jsonwebtoken");
 const cacheClient = require("../services/cache.service");
 
 const registerController = async (req, res) => {
@@ -23,6 +22,9 @@ const registerController = async (req, res) => {
       password,
       username,
     });
+
+    // Cache user data for 1 hour
+    await cacheClient.setex(`user:${newUser._id}`, 3600, JSON.stringify(newUser));
 
     const token = await generateToken(newUser._id);
 
@@ -69,6 +71,9 @@ const loginController = async (req, res) => {
 
     if (!isMatchPassword)
       return res.status(401).json({ message: "Invalid Credentials" });
+
+    // Cache user data for 1 hour
+    await cacheClient.setex(`user:${user._id}`, 3600, JSON.stringify(user));
 
     const token = await generateToken(user._id);
 

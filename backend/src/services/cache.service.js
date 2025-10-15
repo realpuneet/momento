@@ -11,4 +11,4 @@ cacheClient.on("error", (err)=>{
     
 })
 
-module.export = cacheClient;
+module.exports = cacheClient;
