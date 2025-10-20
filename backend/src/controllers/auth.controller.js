@@ -24,7 +24,11 @@ const registerController = async (req, res) => {
     });
 
     // Cache user data for 1 hour
-    await cacheClient.setex(`user:${newUser._id}`, 3600, JSON.stringify(newUser));
+    await cacheClient.setex(
+      `user:${newUser._id}`,
+      3600,
+      JSON.stringify(newUser)
+    );
 
     const token = await generateToken(newUser._id);
 
@@ -75,7 +79,7 @@ const loginController = async (req, res) => {
     // Cache user data for 1 hour
     await cacheClient.setex(`user:${user._id}`, 3600, JSON.stringify(user));
 
-    const token = await generateToken(user._id);
+    const token = generateToken(user._id);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -98,8 +102,8 @@ const logoutController = async (req, res) => {
   try {
     const token = req.cookies.token;
 
-    if(!token) {
-      return res.status(400).json({ message: 'token not found' });   
+    if (!token) {
+      return res.status(400).json({ message: "token not found" });
     }
 
     await cacheClient.set(token, "blacklisted");
@@ -107,11 +111,10 @@ const logoutController = async (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: false,
-      sameSite: "Strict"
+      sameSite: "Strict",
     });
 
-    return res.status(200).json({ message: 'Logged Out Success' });
-
+    return res.status(200).json({ message: "Logged Out Success" });
   } catch (error) {
     console.log("Error in sign out :", error);
     return res.status(500).json({ message: "Internal Server Error" });
