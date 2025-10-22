@@ -85,7 +85,7 @@ const Login = () => {
           {errors.password && <p className="text-red-500 text-sm ml-4">{errors.password.message}</p>}
           
           <div className="text-right">
-            <a href="#" className="text-xs text-blue-500 hover:text-blue-600 transition-colors">Forgot Password?</a>
+            <Link to="/forgot-password" className="text-sm text-blue-500 hover:text-blue-600 transition-colors">Forgot Password?</Link>
           </div>
           <button
             type="submit"
